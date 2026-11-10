@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Gold Intelligence AI: local market data and experiment outputs
+/data/
+mlruns/

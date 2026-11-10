@@ -1,0 +1,78 @@
+[project]
+name = "gold-intel"
+version = "0.1.0"
+description = "AI-powered multi-asset market intelligence and trading analytics platform, starting with XAUUSD."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary" }
+dependencies = [
+    "pydantic-settings>=2.6",
+    "typer>=0.15",
+]
+
+[project.scripts]
+gold-intel = "gold_intel.cli:app"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13",
+    "pre-commit>=4.0",
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gold_intel"]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "SIM",      # simplify
+    "N",        # naming
+    "RUF",      # ruff-specific
+    "PTH",      # use pathlib
+    "DTZ",      # timezone-aware datetimes (critical for market data)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["B011"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+plugins = ["pydantic.mypy"]
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config"]
+markers = [
+    "integration: tests that touch the filesystem or external services",
+    "network: tests that require internet access (skipped in CI by default)",
+]
+
+[tool.coverage.run]
+source = ["gold_intel"]
+branch = true
+omit = ["*/gold_intel/__main__.py"]  # exercised via subprocess in tests/unit/test_cli.py
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
